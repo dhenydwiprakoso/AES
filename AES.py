@@ -40,13 +40,13 @@ def pageEnkrip():
     lblPlain = Label(frame, font=('arial', 10, 'bold'), text="Plain Text", bd=10, anchor = 'w')
     lblPlain.place(relx=0.20,rely=0.25)
     txtPlain=Entry(frame, font=('arial', 10, 'bold'), textvariable=plain_text_enkrip, bd=10, insertwidth=4,
-                       bg="powder blue", justify = 'center')
+                       bg="powder blue", justify = 'left')
     txtPlain.place(relx=0.40,rely=0.25)
 
     lblKey = Label(frame, font=('arial', 10, 'bold'), text="Key", bd=10, anchor = 'w')
     lblKey.place(relx=0.20,rely=0.38)
     txtKey=Entry(frame, font=('arial', 10, 'bold'), textvariable=key_enkrip, bd=10, insertwidth=4,
-                       bg="powder blue", justify = 'center')
+                       bg="powder blue", justify = 'left')
     txtKey.place(relx=0.40,rely=0.38)
 
     btnEnkrip = Button(padx=30, pady = 3, bd = 10, fg="black", font=('arial', 8, 'bold'), width=5, text="Enkrip sekarang", command=pageEnkrip)
@@ -54,8 +54,8 @@ def pageEnkrip():
 
     lblKey = Label(frame, font=('arial', 10, 'bold'), text="Cipher Text", bd=10, anchor = 'w')
     lblKey.place(relx=0.40,rely=0.68)
-    txtKey=Entry(frame, font=('arial', 10, 'bold'), textvariable=key_enkrip, bd=10, insertwidth=4,
-                       bg="white", justify = 'center')
+    txtKey=Entry(frame, font=('arial', 10, 'bold'), textvariable=cipher_text_enkrip, bd=10, insertwidth=4,
+                       bg="white", justify = 'left')
     txtKey.place(relx=0.60,rely=0.68)
 
     btnBackHome = Button(padx=30, pady = 3, bd = 10, fg="black", font=('arial', 8, 'bold'), width=5, text="Back to Home", command=home)
@@ -76,14 +76,14 @@ def pageDekrip():
 
     lblPlain = Label(frame, font=('arial', 10, 'bold'), text="Cipher Text", bd=10, anchor = 'w')
     lblPlain.place(relx=0.20,rely=0.25)
-    txtPlain=Entry(frame, font=('arial', 10, 'bold'), textvariable=plain_text_dekrip, bd=10, insertwidth=4,
-                       bg="powder blue", justify = 'center')
+    txtPlain=Entry(frame, font=('arial', 10, 'bold'), textvariable=cipher_text_dekrip, bd=10, insertwidth=4,
+                       bg="powder blue", justify = 'left')
     txtPlain.place(relx=0.40,rely=0.25)
 
     lblKey = Label(frame, font=('arial', 10, 'bold'), text="Key", bd=10, anchor = 'w')
     lblKey.place(relx=0.20,rely=0.38)
     txtKey=Entry(frame, font=('arial', 10, 'bold'), textvariable=key_dekrip, bd=10, insertwidth=4,
-                       bg="powder blue", justify = 'center')
+                       bg="powder blue", justify = 'left')
     txtKey.place(relx=0.40,rely=0.38)
 
     btnEnkrip = Button(padx=30, pady = 3, bd = 10, fg="black", font=('arial', 8, 'bold'), width=5, text="Dekrip sekarang", command=pageDekrip)
@@ -91,8 +91,8 @@ def pageDekrip():
 
     lblKey = Label(frame, font=('arial', 10, 'bold'), text="Plain Text", bd=10, anchor = 'w')
     lblKey.place(relx=0.42,rely=0.68)
-    txtKey=Entry(frame, font=('arial', 10, 'bold'), textvariable=key_dekrip, bd=10, insertwidth=4,
-                       bg="white", justify = 'center')
+    txtKey=Entry(frame, font=('arial', 10, 'bold'), textvariable=plain_text_dekrip, bd=10, insertwidth=4,
+                       bg="white", justify = 'left')
     txtKey.place(relx=0.60,rely=0.68)
 
     btnBackHome = Button(padx=30, pady = 3, bd = 10, fg="black", font=('arial', 8, 'bold'), width=5, text="Back to Home", command=home)
