@@ -1,4 +1,7 @@
 from tkinter import *
+import random
+import sympy
+
 root=Tk()
 root.geometry("800x600")
 root.title("AES-CTR with BBS")
@@ -6,7 +9,34 @@ root.title("AES-CTR with BBS")
 frame=Frame(root,bg='lightblue')
 frame.place(relx=0.2,rely=0.2,relheight=0.6,relwidth=0.6)
 #-------------------definisi function untuk kriptografi-----------
+def next_usable_prime(x):
+        p = sympy.nextprime(x)
+        while (p % 4 != 3):
+            p = sympy.nextprime(p)
+        return p
 
+def bbs() :
+    x = 3*10**19
+    y = 7*10**19
+    seed = random.randint(1,1e10)
+    p = next_usable_prime(x)
+    q = next_usable_prime(y)
+    M = p*q
+
+    N = 1000 
+    if (len(sys.argv)>1):
+        N=int(sys.argv[1])
+
+    for _ in range(N):
+        x = x*x % M
+        b = x % 2
+
+    return b
+
+def enkripsi() :
+    counter1 = bbs()
+    counter1 = bin(counter1)
+    cipher_text_enkrip.set(counter1)
 #---------------definisi function untuk tampilan halaman-------
 def home():
     frame=Frame(root,bg='lightblue')
@@ -25,9 +55,7 @@ def home():
     label.place(relx=0.33,rely=0.83)
 
 def pageEnkrip():
-    plain_text_enkrip = StringVar()
-    key_enkrip = StringVar()
-    cipher_text_enkrip = StringVar()
+
 
 
     
@@ -49,7 +77,7 @@ def pageEnkrip():
                        bg="powder blue", justify = 'left')
     txtKey.place(relx=0.40,rely=0.38)
 
-    btnEnkrip = Button(padx=30, pady = 3, bd = 10, fg="black", font=('arial', 8, 'bold'), width=5, text="Enkrip sekarang", command=pageEnkrip)
+    btnEnkrip = Button(padx=30, pady = 3, bd = 10, fg="black", font=('arial', 8, 'bold'), width=5, text="Enkrip sekarang", command=enkripsi)
     btnEnkrip.place(relx=0.5, rely=0.55, anchor=CENTER)
 
     lblKey = Label(frame, font=('arial', 10, 'bold'), text="Cipher Text", bd=10, anchor = 'w')
@@ -58,16 +86,13 @@ def pageEnkrip():
                        bg="white", justify = 'left')
     txtKey.place(relx=0.60,rely=0.68)
 
+
+
     btnBackHome = Button(padx=30, pady = 3, bd = 10, fg="black", font=('arial', 8, 'bold'), width=5, text="Back to Home", command=home)
     btnBackHome.place(relx=0.5, rely=0.73, anchor=CENTER)
 
 def pageDekrip():
-    plain_text_dekrip = StringVar()
-    key_dekrip = StringVar()
-    cipher_text_dekrip = StringVar()
 
-
-    
     frame=Frame(root,bg='lightblue')
     frame.place(relx=0.2,rely=0.2,relheight=0.6,relwidth=0.6)
     label=Label(frame, font=('arial', 15, 'bold'), text="Dekripsi AES", fg="steel blue" , anchor='w')
@@ -99,6 +124,7 @@ def pageDekrip():
     btnBackHome.place(relx=0.5, rely=0.73, anchor=CENTER)
     
 #--------tombol navigasi kiri atas
+    
 bt=Button(root,text='Home',command=home)
 bt.grid(column=0,row=0)
 
@@ -107,7 +133,16 @@ bt1.grid(row=0,column=1)
 
 bt2=Button(root,text='Dekripsi',command=pageDekrip)
 bt2.grid(row=0,column=2)
+#-------------teks listener
+plain_text_enkrip = StringVar()
+key_enkrip = StringVar()
+cipher_text_enkrip = StringVar()
+plain_text_dekrip = StringVar()
+key_dekrip = StringVar()
+cipher_text_dekrip = StringVar()
 
+
+    
 #--------default tampilan home
 label=Label(frame, font=('arial', 15, 'bold'), text="AES-CTR with BBS", fg="steel blue" , anchor='w')
 label.place(relx=0.31,rely=0.15)
