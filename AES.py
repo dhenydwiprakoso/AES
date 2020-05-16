@@ -1,6 +1,8 @@
 from tkinter import *
 import random
 import sympy
+import struct
+import bitstring
 
 root=Tk()
 root.geometry("800x600")
@@ -52,28 +54,33 @@ inv_s_box = (
 
 #-------------------definisi function untuk kriptografi-----------
 def next_usable_prime(x):
-        p = sympy.nextprime(x)
-        while (p % 4 != 3):
-            p = sympy.nextprime(p)
-        return p
+    p = sympy.nextprime(x)
+    while (p % 4 != 3):
+        p = sympy.nextprime(p)
+    return p
 
 def bbs() :
     x = 3*10**19
-    y = 7*10**19
-    seed = random.randint(1,1e10)
+    y = 7*10**21
+    seed = random.randint(1,1e19)
     p = next_usable_prime(x)
     q = next_usable_prime(y)
     M = p*q
 
-    N = 1000 
-    if (len(sys.argv)>1):
-        N=int(sys.argv[1])
+    N = 128
 
+    x = seed
+
+    bit_output = ''
+    
     for _ in range(N):
         x = x*x % M
         b = x % 2
+        bit_output += str(b)
 
-    return b
+    int_output = int(bit_output, 2)
+    #bit_output = bitstring.BitArray(bin=bit_output)
+    return bit_output
 
 def sub_bytes(s):
     for i in range(4):
@@ -130,17 +137,147 @@ def inv_mix_columns(s):
         s[i][3] ^= v
 
     mix_columns(s)
-    
-def enkripsi() :
-    counter1 = bbs()
-    counter1 = hex(counter1)
-    cipher_text_enkrip.set(counter1)
 
-def dekripsi():
-        lala
+def bytes2matrix(text):
+    """ Converts a 16-byte array into a 4x4 matrix.  """
+    return [list(text[i:i+4]) for i in range(0, len(text), 4)]
+
+def matrix2bytes(matrix):
+    """ Converts a 4x4 matrix into a 16-byte array.  """
+    return bytes(sum(matrix, []))
+
+def xor_bytes(a, b):
+    """ Returns a new byte array with the elements xor'ed. """
+    return bytes(i^j for i, j in zip(a, b))
+
+def inc_bytes(a):
+    """ Returns a new byte array with the value increment by 1 """
+    out = list(a)
+    for i in reversed(range(len(out))):
+        if out[i] == 0xFF:
+            out[i] = 0
+        else:
+            out[i] += 1
+            break
+    return bytes(out)
+
+
+
+def split_blocks(message, block_size=16):
+    assert len(message) % block_size == 0
+    return [message[i:i+16] for i in range(0, len(message), block_size)]
+
+def encrypt_block(self, plaintext):
+    """
+    Encrypts a single block of 16 byte long plaintext.
+    """
+    assert len(plaintext) == 16
+    plain_state = bytes2matrix(plaintext)
+
+    add_round_key(plain_state, self._key_matrices[0])
+
+    for i in range(1, self.n_rounds):
+        sub_bytes(plain_state)
+        shift_rows(plain_state)
+        mix_columns(plain_state)
+        add_round_key(plain_state, self._key_matrices[i])
+
+    sub_bytes(plain_state)
+    shift_rows(plain_state)
+    add_round_key(plain_state, self._key_matrices[-1])
+
+    return matrix2bytes(plain_state)
+
+def decrypt_block(self, ciphertext):
+    """
+     Decrypts a single block of 16 byte long ciphertext.
+    """
+    assert len(ciphertext) == 16
+
+    cipher_state = bytes2matrix(ciphertext)
+
+    add_round_key(cipher_state, self._key_matrices[-1])
+    inv_shift_rows(cipher_state)
+    inv_sub_bytes(cipher_state)
+
+    for i in range(self.n_rounds - 1, 0, -1):
+        add_round_key(cipher_state, self._key_matrices[i])
+        inv_mix_columns(cipher_state)
+        inv_shift_rows(cipher_state)
+        inv_sub_bytes(cipher_state)
+            
+    add_round_key(cipher_state, self._key_matrices[0])
+
+    return matrix2bytes(cipher_state)
+
+
+def encrypt_ctr(self, plaintext, iv):
+    """
+    Encrypts `plaintext` using CTR mode and PKCS#7 padding, with the given
+    initialization vector (iv).
+    """
+    assert len(iv) == 16
+
+    plaintext = pad(plaintext)
+
+    blocks = []
+    nonce = iv
+    for plaintext_block in split_blocks(plaintext):
+    # CTR mode encrypt: plaintext_block XOR encrypt(nonce)
+        block = xor_bytes(plaintext_block, self.encrypt_block(nonce))
+        blocks.append(block)
+        nonce = inc_bytes(nonce)
+
+    return b''.join(blocks)
+
+def decrypt_ctr(self, ciphertext, iv):
+    """
+    Decrypts `plaintext` using CTR mode and PKCS#7 padding, with the given
+    initialization vector (iv).
+    """
+    assert len(iv) == 16
+
+    blocks = []
+    nonce = iv
+    for ciphertext_block in split_blocks(ciphertext):
+        # CTR mode decrypt: ciphertext XOR decrypt(nonce)
+        block = xor_bytes(ciphertext_block, self.decrypt_block(nonce))
+        blocks.append(block)
+        nonce = inc_bytes(nonce)
+
+    return unpad(b''.join(blocks))
+
+
+
+def enkripsi():             
+    plaintext = plain_text_enkrip.get()
+    key = key_enkrip.get()
+
+    
+    counter1 = bbs()
+    #counter1 = hex(counter1)
+    if isinstance(key, str):
+        key = key.encode('utf-8')
+    if isinstance(plaintext, str):
+        plaintext = plaintext.encode('utf-8')
 
         
+    cipher_text_enkrip.set(counter1)
+    
+
+def dekripsi():
+    plaintext = plain_text_dekrip.get()
+    key = key_dekrip.get()
+
 #---------------definisi function untuk tampilan halaman-------
+def Reset():
+    plain_text_enkrip.set("")
+    key_enkrip.set("")
+    cipher_text_enkrip.set("")
+    plain_text_dekrip.set("")
+    key_dekrip.set("")
+    cipher_text_dekrip.set("")
+
 def home():
     frame=Frame(root,bg='lightblue')
     frame.place(relx=0.2,rely=0.2,relheight=0.6,relwidth=0.6)
